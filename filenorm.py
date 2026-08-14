@@ -13,3 +13,21 @@ def parse_arguments():
                         help="Show changes without actually renaming files")
     return parser.parse_args()
 
+def normalize_name(name, allowed_chars):
+    normalized = unicodedata.normalize('NFKD', name)
+    clean_chars = []
+
+    for char in normalized:
+        if char == ' ':
+            clean_chars.append('_')
+        else:
+            lower_char = char.lower()
+            if lower_char in allowed_chars:
+                clean_chars.append(lower_char)
+    
+    new_name = ''.join(clean_chars)
+
+    while '__' in new_name:
+        new_name = new_name.replace('__', '_')
+    
+    return new_name.strip('_')
