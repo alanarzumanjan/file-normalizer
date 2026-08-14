@@ -1,1 +1,1 @@
-# file-normalizer
+# File-normalizer
