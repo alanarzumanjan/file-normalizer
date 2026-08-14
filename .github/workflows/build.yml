@@ -1,0 +1,55 @@
+name: Build Binaries
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact_name: filenorm
+            asset_name: filenorm-linux-amd64
+          - os: windows-latest
+            artifact_name: filenorm.exe
+            asset_name: filenorm-windows-amd64.exe
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies & PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install .
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller --onefile --name filenorm src/filenorm/main.py
+
+      - name: Prepare artifact
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            mv dist/filenorm.exe dist/${{ matrix.asset_name }}
+          else
+            mv dist/filenorm dist/${{ matrix.asset_name }}
+          fi
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/${{ matrix.asset_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
