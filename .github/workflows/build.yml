@@ -21,6 +21,9 @@ jobs:
           - os: windows-latest
             artifact_name: filenorm.exe
             asset_name: filenorm-windows-amd64.exe
+          - os: macos-latest
+            artifact_name: filenorm
+            asset_name: filenorm-macos-universal
 
     steps:
       - name: Checkout code
