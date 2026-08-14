@@ -31,10 +31,16 @@ python --version
 pip --version
 ```
 
-**Install**
+**Install from repo**
 
 ```bash
 pip install git+https://github.com/alanarzumanjan/file-normalizer.git
+```
+
+**You can install `filenorm` directly from PyPI:**
+
+```bash
+pip install filenorm
 ```
 
 ### Option 2: Standalone binaries
