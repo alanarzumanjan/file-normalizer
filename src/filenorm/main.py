@@ -4,9 +4,12 @@ import os, argparse
 from os.path import isfile
 import string as s
 import unicodedata
+from filenorm.installer import install_for_windows
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description="Normalize file names by converting to lowercase, replacing spaces, and removing unsupported characters.")
+    parser.add_argument("--install", action="store_true", 
+                        help="Install filenorm to user PATH (Windows)")
     parser.add_argument("path", type=str, nargs="?", default=".",
                         help="Target directory path (default: current directory)")
     parser.add_argument("-r", "--recursive", action="store_true",
@@ -40,6 +43,10 @@ def main():
     allowed_chars = set(s.ascii_lowercase + s.digits + '_')
     target_path = args.path
     
+    if args.install:
+        install_for_windows()
+        return
+
     if args.recursive:
         walker = os.walk(target_path, topdown=False)
     else:
