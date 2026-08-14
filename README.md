@@ -36,9 +36,9 @@ Available binaries:
 
 - **Windows:** `filenorm-windows-amd64.exe`
 
-    Open a `.exe` file. After that open a PowerShell and write:
+    Open a `Downloads directory` - `cd $HOME\Downloads` in PowerShell and write:
     ```powershell
-    filenorm-windows-amd64.exe --install
+    .\filenorm-windows-amd64.exe --install
     ```
 
 ### Option 3: Install for development
