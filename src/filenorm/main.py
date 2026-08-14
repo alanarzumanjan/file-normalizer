@@ -20,9 +20,9 @@ def parse_arguments():
                         help="Text casing style: lower, upper, title (Each Word Capitalized), or capitalize")
     parser.add_argument("-s", "--separator", choices=["snake", "kebab", "space"], default="snake",
                         help="Word separator style: snake (underscores), kebab (hyphens), or space")
-    parser.add_argument("-p", "--pref", "--prefix", type=str, default="",
+    parser.add_argument("-p", "--pref", "--prefix", dest="prefix", type=str, default="",
                         help="Add a fixed prefix to file names")
-    parser.add_argument("-x", "--suf","--suffix", type=str, default="",
+    parser.add_argument("-x", "--suf","--suffix", dest="suffix", type=str, default="",
                         help="Add a fixed suffix to file names (before extension)")
     parser.add_argument("-i", "--install", action="store_true", 
                         help="Install filenorm to user PATH (Windows)")
