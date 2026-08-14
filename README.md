@@ -161,7 +161,7 @@ filenorm .
 **Rebuild in `root repo directory`**
 
 ```bash
-pip uninstall -e .
+pip uninstall filenorm
 pip install -e .
 ```
 
