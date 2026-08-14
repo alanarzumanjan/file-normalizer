@@ -3,11 +3,10 @@ import string as s
 import unicodedata
 from filenorm.translit import transliterate
 
-# Some of the code in this file is adapted from
 def split_filename(filename):
     compound_extensions = [
-        # Arhive formats
-        '.tar.gz', '.tar.bz2', '.tar.xz', '.tar.zst', '.tar.lz', '.tar.lzma', '.tar.Z', '.tar.bak',
+        # Archive formats
+        '.tar.gz.bak', '.tar.gz', '.tar.bz2', '.tar.xz', '.tar.zst', '.tar.lz', '.tar.lzma', '.tar.Z', '.tar.bak',
         # User script formats
         '.user.js', '.meta.js',
         # Test and minified formats
@@ -15,7 +14,7 @@ def split_filename(filename):
         # Config formats
         '.config.js', '.config.ts', '.config.json', '.config.yaml', '.config.yml',
         # Backup formats
-        '.log.gz', '.bak.gz', '.tar.gz.bak'
+        '.log.gz', '.bak.gz'
     ]
 
     compound_extensions.sort(key=len, reverse=True)
@@ -29,49 +28,47 @@ def split_filename(filename):
             
     return os.path.splitext(filename)
 
-# Get allowed characters based on the case style
-def get_allowed_chars(case_style):
-    if case_style == 'kebab':
-        return set(s.ascii_lowercase + s.digits + '-')
-    elif case_style == 'snake':
-        return set(s.ascii_lowercase + s.digits + '_')
-    else:
-        return set(s.ascii_lowercase + s.digits + ' _-')
-
-# Normalize based on the case style, allowed characters and prefix/suffix
-def normalize_name(name, allowed_chars, case_style, prefix="", suffix=""):
+def normalize_name(name, separator_style, case_style, prefix="", suffix=""):
     transliterated = transliterate(name)
     normalized = unicodedata.normalize('NFKD', transliterated)
 
     clean_chars = []
-    separator = '-' if case_style == 'kebab' else '_'
+    sep_char = {'snake': '_', 'kebab': '-', 'space': ' '}.get(separator_style, '_')
 
-    # Replace spaces and unsupported characters with the operator choice
+    # Replace spaces and unsupported with chosen separator
     for char in normalized:
         if char in (' ', '-', '_'):
-            if case_style == 'lower':
-                clean_chars.append(' ')
-            else:
-                clean_chars.append(separator)
+            clean_chars.append(sep_char)
         else:
-            lower_char = char.lower()
-            if lower_char in allowed_chars:
-                clean_chars.append(lower_char)
+            if char.isalnum():
+                clean_chars.append(char)
     
     new_name = ''.join(clean_chars)
 
-    # Remove consecutive separators or spaces and trim leading/trailing ones
-    if case_style != 'lower':
-        double_sep = separator + separator
-
-        while double_sep in new_name: # Remove consecutive separators
-            new_name = new_name.replace(double_sep, separator)
-
-        new_name = new_name.strip(separator)
+    # Remove consecutive separators and trim leading/trailing ones
+    if sep_char != ' ':
+        double_sep = sep_char + sep_char
+        while double_sep in new_name:
+            new_name = new_name.replace(double_sep, sep_char)
+        new_name = new_name.strip(sep_char)
     else:
         while '  ' in new_name:
             new_name = new_name.replace('  ', ' ')
         new_name = new_name.strip()
+
+    # Apply text casing style independently
+    if case_style == 'lower':
+        new_name = new_name.lower()
+    elif case_style == 'upper':
+        new_name = new_name.upper()
+    elif case_style == 'title':
+        if sep_char == ' ':
+            new_name = new_name.title()
+        else:
+            words = new_name.split(sep_char)
+            new_name = sep_char.join([w.capitalize() for w in words if w])
+    elif case_style == 'capitalize':
+        new_name = new_name.capitalize()
 
     # Add prefix and suffix if provided
     if prefix:
