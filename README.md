@@ -8,9 +8,11 @@ A lightweight, cross-platform command-line utility for cleaning up and normalizi
 
 - **Lowercase conversion** — converts file names to lowercase.
 - **Space handling** — replaces spaces with a consistent separator.
+- **Transliteration** — automatically converts non-Latin characters (like Cyrillic, Chinese, etc.) into standard Latin script using unidecode
 - **Special character removal** — removes unsupported or disruptive characters.
 - **Recursive mode (`-r`)** — processes files inside nested directories.
 - **Dry-run mode (`-d`)** — previews changes without renaming anything.
+- **Windows installation (`--install`)** — automatically copies the executable and adds it to the user's PATH environment variable.
 
 ## Installation
 
@@ -31,7 +33,13 @@ Download the latest release from the [GitHub Releases](https://github.com/alanar
 Available binaries:
 
 - **Linux:** `filenorm-linux-amd64`
+
 - **Windows:** `filenorm-windows-amd64.exe`
+
+    Open a `.exe` file. After that open a PowerShell and write:
+    ```powershell
+    filenorm-windows-amd64.exe --install
+    ```
 
 ### Option 3: Install for development
 
@@ -62,6 +70,7 @@ filenorm [path] [options]
 | `-h`, `--help` | Show the help message and exit. |
 | `-r`, `--recursive` | Process files in nested directories recursively. |
 | `-d`, `--dry-run` | Preview changes without renaming files. |
+| `--install` | automatically copies the executable and adds it to the user's PATH environment variable(Windows) |
 
 ## Examples
 
