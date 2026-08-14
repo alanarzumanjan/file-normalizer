@@ -16,12 +16,12 @@ A lightweight, cross-platform command-line utility for cleaning up and normalizi
 
 ## Installation
 
-### Option 1: Install with `pipx` — Recommended
+### Option 1: Install with `pip` — Recommended
 
-If you have Python and `pipx` installed, you can install `filenorm` globally in an isolated environment:
+If you have Python and `pip` installed, you can install `filenorm` globally in an isolated environment:
 
 ```bash
-pipx install git+https://github.com/alanarzumanjan/file-normalizer.git
+pip install git+https://github.com/alanarzumanjan/file-normalizer.git
 ```
 
 ### Option 2: Standalone binaries
