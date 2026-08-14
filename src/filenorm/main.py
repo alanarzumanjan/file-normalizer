@@ -1,30 +1,33 @@
 #!/usr/bin/env python3
 
 import os, argparse
-from filenorm.core import split_filename, get_allowed_chars, normalize_name
+from filenorm.core import split_filename, normalize_name
 
-# Arguments definition and parsing
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Normalize file names by converting case," \
-                        " replacing spaces, and removing unsupported characters.")
+    parser = argparse.ArgumentParser(
+        description=(
+            "Normalize file names by configuring case styles, "
+            "word separators, and removing unsupported characters."
+        )
+    )
     parser.add_argument("path", type=str, nargs="?", default=".",
                         help="Target directory path (default: current directory)")
     parser.add_argument("-r", "--recursive", action="store_true",
                         help="Process directories recursively")
     parser.add_argument("-d", "--dry-run", action="store_true",
                         help="Show changes without actually renaming files")
-    parser.add_argument("--case", choices=["snake", "kebab", "lower"], default="snake",
-                        help="Naming case style: snake (underscores), kebab (hyphens)," \
-                        " or lower (lowercase with spaces)")
-    parser.add_argument("--prefix", type=str, default="",
+    parser.add_argument("-c", "--case", choices=["lower", "upper", "title", "capitalize"], default="lower",
+                        help="Text casing style: lower, upper, title (Each Word Capitalized), or capitalize")
+    parser.add_argument("-s", "--separator", choices=["snake", "kebab", "space"], default="snake",
+                        help="Word separator style: snake (underscores), kebab (hyphens), or space")
+    parser.add_argument("-p", "--pref", "--prefix", type=str, default="",
                         help="Add a fixed prefix to file names")
-    parser.add_argument("--suffix", type=str, default="",
+    parser.add_argument("-x", "--suf","--suffix", type=str, default="",
                         help="Add a fixed suffix to file names (before extension)")
-    parser.add_argument("--install", action="store_true", 
+    parser.add_argument("-i", "--install", action="store_true", 
                         help="Install filenorm to user PATH (Windows)")
     return parser.parse_args()
 
-# Main function
 def main():
     args = parse_arguments()
 
@@ -34,8 +37,6 @@ def main():
         install_for_windows()
         return
     
-    # Get allowed characters based on the case style
-    allowed_chars = get_allowed_chars(args.case)
     target_path = args.path
 
     if args.recursive:
@@ -53,12 +54,12 @@ def main():
             
             name, ext = split_filename(filename)
 
-            # Converting all
-            new_name = normalize_name(name, allowed_chars, args.case, args.prefix, args.suffix)
+            # Normalize the name and extension
+            new_name = normalize_name(name, args.separator, args.case, args.prefix, args.suffix)
             new_ext = ext.replace(' ', '_').lower()
             new_filename = new_name + new_ext
 
-            if filename != new_filename: # Only rename if the new filename is different
+            if filename != new_filename: # Rename if the new filename is different
                 new_file_path = os.path.join(current_dir, new_filename)
            
                 if args.dry_run:
