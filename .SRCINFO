@@ -1,0 +1,16 @@
+pkgbase = filenorm
+	pkgdesc = A simple utility to normalize file names
+	pkgver = 1.3.0
+	pkgrel = 1
+	url = https://github.com/alanarzumanjan/file-normalizer
+	arch = any
+	license = custom
+	makedepends = python-build
+	makedepends = python-installer
+	makedepends = python-wheel
+	depends = python
+	depends = python-unidecode
+	source = https://files.pythonhosted.org/packages/source/f/filenorm/filenorm-1.3.0.tar.gz
+	sha256sums = 24e7adf67124d92fec5bfef507d2d81a35401b05f139acd027f80ba244ff7d64
+
+pkgname = filenorm
