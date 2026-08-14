@@ -4,6 +4,7 @@ import shutil
 import ctypes
 import winreg
 
+# This function installs the filenorm utility for Windows by copying the current executable to a specific directory and adding that directory to the user's PATH environment variable.
 def install_for_windows():
     if sys.platform != "win32":
         print("This feature is only available for Windows.")
