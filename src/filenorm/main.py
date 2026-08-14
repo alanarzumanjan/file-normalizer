@@ -4,12 +4,11 @@ import os, argparse
 from os.path import isfile
 import string as s
 import unicodedata
-from filenorm.installer import install_for_windows
+from filenorm.translit import transliterate
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Normalize file names by converting to lowercase, replacing spaces, and removing unsupported characters.")
-    parser.add_argument("--install", action="store_true", 
-                        help="Install filenorm to user PATH (Windows)")
+    parser = argparse.ArgumentParser(description="Normalize file names by converting to lowercase," \
+                        " replacing spaces, and removing unsupported characters.")
     parser.add_argument("path", type=str, nargs="?", default=".",
                         help="Target directory path (default: current directory)")
     parser.add_argument("-r", "--recursive", action="store_true",
@@ -17,10 +16,13 @@ def parse_arguments():
     parser.add_argument("-d", "--dry-run",
                         action="store_true",
                         help="Show changes without actually renaming files")
+    parser.add_argument("--install", action="store_true", 
+                        help="Install filenorm to user PATH (Windows)")
     return parser.parse_args()
 
 def normalize_name(name, allowed_chars):
-    normalized = unicodedata.normalize('NFKD', name)
+    transliterated = transliterate(name)
+    normalized = unicodedata.normalize('NFKD', transliterated)
     clean_chars = []
 
     for char in normalized:
@@ -44,6 +46,7 @@ def main():
     target_path = args.path
     
     if args.install:
+        from filenorm.installer import install_for_windows
         install_for_windows()
         return
 
