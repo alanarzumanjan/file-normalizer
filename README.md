@@ -4,6 +4,11 @@ A lightweight, cross-platform command-line utility for cleaning up and normalizi
 
 `filenorm` standardizes file names by configuring case styles, word separators, adding custom prefixes/suffixes, transliterating characters, and keeping complex extensions safe.
 
+<video width="100%" autoplay loop muted playsinline>
+  <source src="docs/preview2.mp4" type="video/mp4">
+  Your browser can't preview this video.
+</video>
+
 ## Features
 
 - **Flexible Case Styles (`-c`,`--case`)** — choose between `lower`, `upper`, `title` (Each Word Capitalized), or `capitalize`.
