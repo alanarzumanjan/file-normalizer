@@ -45,7 +45,7 @@ def main():
 
     if not args.path: # If path is None - Help
         print_error("You forgot to specify the directory path!")
-        print_example("Example: filenorm -s kebab .")
+        print_example("filenorm -s kebab .")
         return
     
     target_path = args.path
