@@ -25,6 +25,8 @@ def parse_arguments():
                         help="Add a fixed prefix to file names")
     parser.add_argument("-x", "--suf","--suffix", dest="suffix", type=str, default="",
                         help="Add a fixed suffix to file names (before extension)")
+    parser.add_argument("-i", "--interactive", action="store_true",
+                        help="Prompt for confirmation before renaming each file")
     parser.add_argument("-e", "--exclude", nargs="*", default=[],
                         help="Exclude files by extension or pattern (e.g., -e .mp3 .txt)")
     parser.add_argument("-l", "--log", action="store_true",
