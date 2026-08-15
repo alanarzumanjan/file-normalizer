@@ -21,11 +21,9 @@ def process_directory(args):
             if os.path.isdir(file_path):
                 continue
 
-            # Skip dotfiles .config .gitignore and etc.
             if filename.startswith('.'):
                 continue
 
-            # Skip self-generated log files
             if filename.lower() in ('filenorm_log.txt', 'filenorm_history.txt'):
                 continue
 
@@ -48,6 +46,13 @@ def process_directory(args):
 
             if filename != new_filename:
                 new_file_path = os.path.join(current_dir, new_filename)
+
+                # Interactive prompt check
+                if args.interactive and not args.dry_run:
+                    response = input(f"Rename \"{filename}\" => \"{new_filename}\"? [Y/n]: ").strip().lower()
+                    if response in ('n', 'no'):
+                        continue  # Skip if user answered anything other than no
+
                 changes_count += 1
 
                 if args.dry_run:
