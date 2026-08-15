@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-import os, argparse
+import os, argparse, sys
 from filenorm.core import split_filename, normalize_name
+from filenorm.notification import print_error, print_example
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -38,8 +39,13 @@ def main():
         install_for_windows()
         return
     
-    if not args.path: # If path is None - Help
+    if len(sys.argv) == 1:
         parser.print_help()
+        return
+
+    if not args.path: # If path is None - Help
+        print_error("You forgot to specify the directory path!")
+        print_example("Example: filenorm -s kebab .")
         return
     
     target_path = args.path
