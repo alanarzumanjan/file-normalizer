@@ -30,7 +30,7 @@ def parse_arguments():
     parser.add_argument("-e", "--exclude", nargs="*", default=[],
                         help="Exclude files by extension or pattern (e.g., -e .mp3 .txt)")
     parser.add_argument("-l", "--log", action="store_true",
-                        help="Save rename history to filenorm_history.txt in target directory")
+                        help="Save rename history to filenorm_log.txt in target directory")
     parser.add_argument("--install", action="store_true", 
                         help="Install filenorm to user PATH (Windows)")
 
