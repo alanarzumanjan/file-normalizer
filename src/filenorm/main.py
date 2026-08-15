@@ -25,7 +25,9 @@ def parse_arguments():
                         help="Add a fixed prefix to file names")
     parser.add_argument("-x", "--suf","--suffix", dest="suffix", type=str, default="",
                         help="Add a fixed suffix to file names (before extension)")
-    parser.add_argument("-i", "--install", action="store_true", 
+    parser.add_argument("-e", "--exclude", nargs="*", default=[],
+                        help="Exclude files by extension or pattern (e.g., -e .mp3 .txt)")
+    parser.add_argument("--install", action="store_true", 
                         help="Install filenorm to user PATH (Windows)")
 
     return parser, parser.parse_args()
@@ -69,6 +71,17 @@ def main():
             if filename.startswith('.'):
                 continue
 
+            if args.exclude: # Exclude files
+                is_excluded = False
+                for exc in args.exclude:
+                    exc_lower = exc.lower()
+                    filename_lower = filename.lower()
+                    if filename_lower.endswith(exc_lower) or exc_lower in filename_lower:
+                        is_excluded = True
+                        break
+                if is_excluded:
+                    continue
+            
             name, ext = split_filename(filename)
 
             # Normalize the name and extension
