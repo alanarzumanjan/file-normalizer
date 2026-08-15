@@ -51,7 +51,11 @@ def main():
             
             if os.path.isdir(file_path): # Skip directories
                 continue
-            
+
+            # Skip dotfiles .config .gitignore and etc. Important!
+            if filename.startswith('.'):
+                continue
+
             name, ext = split_filename(filename)
 
             # Normalize the name and extension
