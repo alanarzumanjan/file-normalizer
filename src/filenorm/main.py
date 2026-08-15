@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-import os, argparse, sys
-from filenorm.core import split_filename, normalize_name
+import argparse, sys
 from filenorm.notification import print_error, print_example
+from filenorm.processor import process_directory
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -27,6 +27,8 @@ def parse_arguments():
                         help="Add a fixed suffix to file names (before extension)")
     parser.add_argument("-e", "--exclude", nargs="*", default=[],
                         help="Exclude files by extension or pattern (e.g., -e .mp3 .txt)")
+    parser.add_argument("-l", "--log", action="store_true",
+                        help="Save rename history to filenorm_history.txt in target directory")
     parser.add_argument("--install", action="store_true", 
                         help="Install filenorm to user PATH (Windows)")
 
@@ -35,7 +37,6 @@ def parse_arguments():
 def main():
     parser, args = parse_arguments()
 
-    # Handle installation if it is windows
     if args.install:
         from filenorm.installer import install_for_windows
         install_for_windows()
@@ -45,62 +46,13 @@ def main():
         parser.print_help()
         return
 
-    if not args.path: # If path is None - Help
+    if not args.path:
         print_error("You forgot to specify the directory path!")
         print_example("filenorm -s kebab .")
         return
     
-    target_path = args.path
-
-    if args.recursive:
-        walker = os.walk(target_path, topdown=False)
-    else:
-        walker = [(target_path, [], os.listdir(target_path))]
-
-    changes_count = 0
-
-    # Process files in the specified directory (and subdirectories if recursive)
-    for current_dir, _, files in walker:
-        for filename in files:
-            file_path = os.path.join(current_dir, filename)
-            
-            if os.path.isdir(file_path): # Skip directories
-                continue
-
-            # Skip dotfiles .config .gitignore and etc. Important!
-            if filename.startswith('.'):
-                continue
-
-            if args.exclude: # Exclude files
-                is_excluded = False
-                for exc in args.exclude:
-                    exc_lower = exc.lower()
-                    filename_lower = filename.lower()
-                    if filename_lower.endswith(exc_lower) or exc_lower in filename_lower:
-                        is_excluded = True
-                        break
-                if is_excluded:
-                    continue
-            
-            name, ext = split_filename(filename)
-
-            # Normalize the name and extension
-            new_name = normalize_name(name, args.separator, args.case, args.prefix, args.suffix)
-            new_ext = ext.replace(' ', '_').lower()
-            new_filename = new_name + new_ext
-
-            if filename != new_filename: # Rename if the new filename is different
-                new_file_path = os.path.join(current_dir, new_filename)
-                changes_count += 1
-
-                if args.dry_run:
-                    print(f"[DRY RUN] \"{filename}\" => \"{new_filename}\"")
-                else:
-                    os.rename(file_path, new_file_path)
-                    print(f"\"{filename}\" => \"{new_filename}\"")
-
-    if changes_count == 0:
-        print("Nothing to do. Everything is already formatted.")
+    # Delegate execution to processor module
+    process_directory(args)
 
 if __name__ == "__main__":
     main()
