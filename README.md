@@ -9,7 +9,8 @@ A lightweight, cross-platform command-line utility for cleaning up and normalizi
   Your browser can't preview this video
 </video> -->
 
-![Preview](docs/preview.gif)
+<!-- ![Preview](docs/preview2.gif) -->
+<img src="docs/preview2.gif" width="100%" alt="Preview">
 
 ## Features
 
