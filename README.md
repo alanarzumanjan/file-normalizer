@@ -11,18 +11,21 @@ A lightweight, cross-platform command-line utility for cleaning up and normalizi
 - **Prefixes & Suffixes (`-p`,`-x`,`--pref`,`--suf`,`--prefix`, `--suffix`)** — add a fixed text at the beginning or end of each file (suffixes are smartly placed before the extension).
 - **Smart Extension Protection** — ensures transformations apply only to the file name while keeping complex/compound extensions (like `.tar.gz`, `.user.js`, `.d.ts`) safe and untouched.
 - **Transliteration** — automatically converts non-Latin characters (like Cyrillic, Chinese, etc.) into standard Latin script using `unidecode`.
-- **Special character removal** — removes unsupported or disruptive characters.
-- **Recursive mode (`-r`)** — processes files inside nested directories.
-- **Dry-run mode (`-d`)** — previews changes without renaming anything.
-- **Windows installation (`-i`,`--install`)** — automatically copies the executable and adds it to the user's PATH environment variable.
+- **Special Character Removal** — removes unsupported or disruptive characters.
+- **Recursive Mode (`-r`)** — processes files inside nested directories.
+- **Dry-run Mode (`-d`)** — previews changes without renaming anything.
+- **Exclude Files (`-e`, `--exclude`)** — skips files or specific extensions (like `.mp3`, `.txt`) from being processed.
+- **History Logging (`-l`, `--log`)** — automatically saves a detailed session report to `filenorm_log.txt`, with self-protection so it never renames its own logs.
+- **Interactive Mode (`-i`, `--interactive`)** — prompts for confirmation (`[Y/n]`) before renaming each file. Pressing Enter defaults to Yes.
+- **Windows Installation (`--install`)** — automatically copies the executable and adds it to the user's PATH environment variable.
 
 ## Installation
 
-### Option 1: Install with `pip` — (Recommended for all systems)
+### Option 1: Install with `pip/x` — (Recommended for all systems)
 
 **[Download Python](https://www.python.org/downloads/)** + add to Environment Variables Path.
 
-If you have Python and `pip` installed, you can install `filenorm` globally in an isolated environment:
+If you have Python and `pip/x` installed, you can install `filenorm` globally in an isolated environment:
 
 **Check downloads**
 
@@ -100,14 +103,17 @@ filenorm [path] [options]
 | `-r`, `--recursive` | Process files in nested directories recursively. |
 | `-d`, `--dry-run` | Preview changes without renaming files. |
 | `-c`, `--case {lower,upper,title,capitalize}` | Text casing style (default: lower). |
-| `-s`, `--separator {snake,kebab,space}` | Word separator style (default: snake) |
-| `-p`,`--pref`, `--prefix TEXT` | Add a fixed prefix to file names. |
-| `-x`,`--suf`,`--suffix TEXT` | Add a fixed suffix to file names (before extension). |
-| `-i`, `--install` | automatically copies the executable and adds it to the user's PATH environment variable(Windows) |
+| `-s`, `--separator {snake,kebab,space}` | Word separator style (default: snake). |
+| `-p`, `--pref`, `--prefix TEXT` | Add a fixed prefix to file names. |
+| `-x`, `--suf`,`--suffix TEXT` | Add a fixed suffix to file names (before extension). |
+| `-e`, `--exclude [EXCLUDE ...]` | Exclude files or extensions by pattern (e.g., `-e .mp3 .txt`). |
+| `-l`, `--log` | Save/append rename history to `filenorm_log.txt` in the target directory. |
+| `-i`, `--interactive` | Prompt for confirmation (`[Y/n]`) before renaming each file. |
+| `--install` | Automatically copies the executable and adds it to the user's PATH (Windows). |
 
 ## Examples
 
-### Preview changes
+### Preview Changes
 
 Preview the changes that would be made in the current directory without modifying any files:
 
@@ -115,7 +121,7 @@ Preview the changes that would be made in the current directory without modifyin
 filenorm --dry-run
 ```
 
-### Normalize recursively
+### Normalize Recursively
 
 Process files in the target directory and all nested directories:
 
@@ -134,6 +140,7 @@ filenorm --case title --separator kebab
 ### Add Prefixes and Suffixes
 
 Add a date prefix and a version suffix to all files:
+
 ```bash
 filenorm --prefix "2026-08-" --suffix "-final"
 ```
@@ -144,25 +151,40 @@ filenorm --prefix "2026-08-" --suffix "-final"
 filenorm /path/to/your/files --recursive --case title --separator kebab --prefix "project-" --suffix "-v1" --dry-run
 ```
 
-or Shortened Command Version
+or Shortened Command Version:
 
 ```bash
 filenorm /path/to/your/files -r -d -c title -s kebab -p "project-" -x "-v1"
 ```
 
-Current Directory Target
+### Current Directory Target
 
 ```bash
-filenorm . 
+filenorm .
 ```
 
-### Rebuild config
+### Exclude Specific Extensions
 
-**Rebuild in `root repo directory`**
+Process the directory but skip all `.mp3` and `.txt` files:
 
 ```bash
-pip uninstall filenorm
-pip install -e .
+filenorm . -e .mp3 .txt
+```
+
+### Save History Log
+
+Normalize files and save/append a timestamped report to `filenorm_log.txt`:
+
+```bash
+filenorm . -s kebab --log
+```
+
+### Interactive Mode
+
+Review and confirm each file rename interactively (press **Enter** to accept `Y`):
+
+```bash
+filenorm . --interactive -c title
 ```
 
 ## Why `filenorm`?
