@@ -10,8 +10,8 @@ def parse_arguments():
             "word separators, and removing unsupported characters."
         )
     )
-    parser.add_argument("path", type=str, nargs="?", default=".",
-                        help="Target directory path (default: current directory)")
+    parser.add_argument("path", type=str, nargs="?", default=None,
+                        help="Target directory path")
     parser.add_argument("-r", "--recursive", action="store_true",
                         help="Process directories recursively")
     parser.add_argument("-d", "--dry-run", action="store_true",
@@ -26,15 +26,20 @@ def parse_arguments():
                         help="Add a fixed suffix to file names (before extension)")
     parser.add_argument("-i", "--install", action="store_true", 
                         help="Install filenorm to user PATH (Windows)")
-    return parser.parse_args()
+
+    return parser, parser.parse_args()
 
 def main():
-    args = parse_arguments()
+    parser, args = parse_arguments()
 
     # Handle installation if it is windows
     if args.install:
         from filenorm.installer import install_for_windows
         install_for_windows()
+        return
+    
+    if not args.path: # If path is None - Help
+        parser.print_help()
         return
     
     target_path = args.path
@@ -43,6 +48,8 @@ def main():
         walker = os.walk(target_path, topdown=False)
     else:
         walker = [(target_path, [], os.listdir(target_path))]
+
+    changes_count = 0
 
     # Process files in the specified directory (and subdirectories if recursive)
     for current_dir, _, files in walker:
@@ -65,12 +72,16 @@ def main():
 
             if filename != new_filename: # Rename if the new filename is different
                 new_file_path = os.path.join(current_dir, new_filename)
-           
+                changes_count += 1
+
                 if args.dry_run:
                     print(f"[DRY RUN] \"{filename}\" => \"{new_filename}\"")
                 else:
                     os.rename(file_path, new_file_path)
                     print(f"\"{filename}\" => \"{new_filename}\"")
+
+    if changes_count == 0:
+        print("Nothing to do. Everything is already formatted.")
 
 if __name__ == "__main__":
     main()
