@@ -11,65 +11,60 @@ def process_directory(args):
     else:
         walker = [(target_path, [], os.listdir(target_path))]
 
-    changes_count = 0
+    changed = 0
     log_records = []
 
     for current_dir, _, files in walker:
         for filename in files:
             file_path = os.path.join(current_dir, filename)
             
-            if os.path.isdir(file_path):
+            if not should_process(filename, file_path, args.exclude):
                 continue
-
-            if filename.startswith('.'):
-                continue
-
-            if filename.lower() in ('filenorm_log.txt', 'filenorm_history.txt'):
-                continue
-
-            if args.exclude:
-                is_excluded = False
-                for exc in args.exclude:
-                    exc_lower = exc.lower()
-                    filename_lower = filename.lower()
-                    if filename_lower.endswith(exc_lower) or exc_lower in filename_lower:
-                        is_excluded = True
-                        break
-                if is_excluded:
-                    continue
             
-            name, ext = split_filename(filename)
+            name, extension = split_filename(filename)
 
-            new_name = normalize_name(name, args.separator, args.case, args.prefix, args.suffix)
-            new_ext = ext.replace(' ', '_').lower()
-            new_filename = new_name + new_ext
+            new_name = normalize_name(
+                name,
+                args.separator,
+                args.case,
+                args.prefix,
+                args.suffix,
+            )
+            new_extension = extension.replace(' ', '_').lower()
+            new_filename = new_name + new_extension
 
             if filename != new_filename:
                 new_file_path = os.path.join(current_dir, new_filename)
 
-                # Interactive prompt check
                 if args.interactive and not args.dry_run:
-                    response = input(f"Rename \"{filename}\" => \"{new_filename}\"? [Y/n]: ").strip().lower()
-                    if response in ('n', 'no'):
-                        continue  # Skip if user answered anything other than no
+                    response = input(
+                        f"Rename \"{filename}\" => \"{new_filename}\"? [Y/n]: "
+                    ).strip().lower()
 
-                changes_count += 1
+                    if response in ("n", "no"):
+                        continue
 
                 if args.dry_run:
                     record = f"[DRY RUN] \"{filename}\" => \"{new_filename}\""
                 else:
+                    if os.path.exists(new_file_path):
+                        print_error(
+                            f"Cannot rename \"{filename}\": "
+                            f"\"{new_filename}\" already exists."
+                        )
+                        continue
                     os.rename(file_path, new_file_path)
                     record = f"\"{filename}\" => \"{new_filename}\""
 
+                changed += 1
                 print(record)
                 log_records.append(record)
 
-    if changes_count == 0:
+    if changed == 0:
         message = "Nothing to do. Everything is already formatted."
         print(message)
         log_records.append(message)
 
-    # Save log file if requested
     if args.log:
         log_file_path = os.path.join(target_path, "filenorm_log.txt")
         try:
@@ -79,5 +74,27 @@ def process_directory(args):
                 for rec in log_records:
                     f.write(rec + "\n")
             print(f"\033[92m[LOG]\033[0m Report appended to {log_file_path}")
-        except Exception as e:
-            print_error(f"Failed to save log file: {e}")
+
+        except OSError as error:
+            print_error(f"Failed to save log file: {error}")
+
+def is_excluded(filename, exclusions):
+    filename_lower = filename.lower()
+
+    return any(
+        pattern.lower() in filename_lower
+        for pattern in exclusions
+    )
+
+def should_process(filename, file_path, exclusions):
+    if os.path.isdir(file_path):
+        return False
+
+    if filename.startswith("."):
+        return False
+
+    # Never process filenorm's own log file.
+    if filename.lower() == "filenorm_log.txt":
+        return False
+
+    return not is_excluded(filename, exclusions)
