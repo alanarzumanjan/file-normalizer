@@ -1,7 +1,50 @@
 import argparse
+import sys
 
 
-def parse_arguments():
+def _normalize_negative_values(arguments):
+    """
+    Allow option values that start with '-'.
+
+    For example:
+        --suffix "-final"
+        -x "-v1"
+
+    are converted internally to:
+        --suffix=-final
+        -x=-v1
+    """
+
+    value_options = {
+        "-p",
+        "--pref",
+        "--prefix",
+        "-x",
+        "--suf",
+        "--suffix",
+    }
+
+    normalized = []
+    i = 0
+
+    while i < len(arguments):
+        argument = arguments[i]
+
+        if argument in value_options and i + 1 < len(arguments):
+            value = arguments[i + 1]
+
+            if value.startswith("-") and value not in value_options:
+                normalized.append(f"{argument}={value}")
+                i += 2
+                continue
+
+        normalized.append(argument)
+        i += 1
+
+    return normalized
+
+
+def create_parser():
     parser = argparse.ArgumentParser(
         description=(
             "Normalize file names by configuring case styles, "
@@ -35,8 +78,8 @@ def parse_arguments():
         choices=["lower", "upper", "title", "capitalize"],
         default="lower",
         help=(
-            "Text casing style: lower, upper, "
-            "title (Each Word Capitalized), or capitalize"
+            "Text casing style: lower, upper, title "
+            "(Each Word Capitalized), or capitalize"
         ),
     )
 
@@ -56,6 +99,7 @@ def parse_arguments():
         "--pref",
         "--prefix",
         dest="prefix",
+        type=str,
         default="",
         help="Add a fixed prefix to file names",
     )
@@ -65,6 +109,7 @@ def parse_arguments():
         "--suf",
         "--suffix",
         dest="suffix",
+        type=str,
         default="",
         help="Add a fixed suffix to file names (before extension)",
     )
@@ -91,7 +136,10 @@ def parse_arguments():
         "-l",
         "--log",
         action="store_true",
-        help="Save rename history to filenorm_log.txt in target directory",
+        help=(
+            "Save rename history to filenorm_log.txt "
+            "in target directory"
+        ),
     )
 
     parser.add_argument(
@@ -101,3 +149,20 @@ def parse_arguments():
     )
 
     return parser
+
+
+def parse_arguments(arguments=None):
+    """
+    Parse command-line arguments.
+
+    Supports values beginning with '-' for prefix and suffix options.
+    """
+
+    if arguments is None:
+        arguments = sys.argv[1:]
+
+    arguments = _normalize_negative_values(arguments)
+
+    parser = create_parser()
+
+    return parser.parse_args(arguments)
