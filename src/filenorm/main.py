@@ -2,20 +2,21 @@
 
 import sys
 
+from filenorm.cli import create_parser, parse_arguments
 from filenorm.notification import print_error, print_example
 from filenorm.processor import process_directory
-from filenorm.cli import parse_arguments
+
 
 def main():
-    parser = parse_arguments()
-    args = parser.parse_args()
-
     if len(sys.argv) == 1:
-        parser.print_help()
+        create_parser().print_help()
         return
-    
+
+    args = parse_arguments()
+
     if args.install:
         from filenorm.installer import install_for_windows
+
         install_for_windows()
         return
 
@@ -23,8 +24,9 @@ def main():
         print_error("You forgot to specify the directory path!")
         print_example("filenorm -s kebab .")
         return
-    
+
     process_directory(args)
+
 
 if __name__ == "__main__":
     main()
