@@ -9,8 +9,7 @@ from filenorm.cli import parse_arguments
 
 
 def parse_args(arguments):
-    parser = parse_arguments()
-    return parser.parse_args(arguments)
+    return parse_arguments(arguments)
 
 
 def test_default_arguments():
@@ -89,6 +88,32 @@ def test_short_prefix_and_suffix_arguments():
     assert args.suffix == "-v1"
 
 
+def test_prefix_and_suffix_with_equals():
+    args = parse_args(
+        [
+            ".",
+            "--prefix=2026-",
+            "--suffix=-final",
+        ]
+    )
+
+    assert args.prefix == "2026-"
+    assert args.suffix == "-final"
+
+
+def test_short_prefix_and_suffix_with_equals():
+    args = parse_args(
+        [
+            ".",
+            "-p=project-",
+            "-x=-v1",
+        ]
+    )
+
+    assert args.prefix == "project-"
+    assert args.suffix == "-v1"
+
+
 def test_boolean_arguments():
     args = parse_args(
         [
@@ -138,6 +163,7 @@ def test_install_argument():
         "capitalize",
     ],
 )
+
 def test_valid_case_styles(case_style):
     args = parse_args(
         [
@@ -158,6 +184,7 @@ def test_valid_case_styles(case_style):
         "space",
     ],
 )
+
 def test_valid_separator_styles(separator_style):
     args = parse_args(
         [
