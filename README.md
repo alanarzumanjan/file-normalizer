@@ -155,6 +155,13 @@ Add a date prefix and a version suffix to all files:
 filenorm --prefix "2026-08-" --suffix "-final"
 ```
 
+**Note:** If a prefix or suffix value starts with `-`, use `=` to make it clear that the value belongs to the option.
+
+```bash
+filenorm --suffix=-final
+filenorm -x=-v1
+```
+
 ### All Combination
 
 ```bash
